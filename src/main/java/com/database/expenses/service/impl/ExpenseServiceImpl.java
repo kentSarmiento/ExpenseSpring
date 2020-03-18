@@ -1,9 +1,13 @@
 package com.database.expenses.service.impl;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import com.database.expenses.ExpenseRepository;
@@ -103,4 +107,32 @@ public class ExpenseServiceImpl implements ExpenseService {
         return retVal;
     }
 
+    @Override
+    public void deleteExpenses(String expenseId) {
+        ExpenseEntity expenseEntity = expenseRepository.findByExpenseId(expenseId);
+        if (expenseEntity == null) {
+            System.out.println("haha");
+            // TODO: throw new UsernameNotFoundException(userId);
+        }
+        expenseRepository.delete(expenseEntity);
+    }
+
+    @Override
+    public List<ExpenseDto> getExpenses(int page, int limit) {
+        List<ExpenseDto> returnValue = new ArrayList<>();
+
+        if (page>0) page = page-1; // 0 is start of database index
+
+        Pageable pageable = PageRequest.of(page, limit);
+        Page<ExpenseEntity> expensePages = expenseRepository.findAll(pageable);
+
+        List<ExpenseEntity> expenseEntities = expensePages.getContent();
+        for (ExpenseEntity expenseEntity : expenseEntities) {
+            ExpenseDto expenseDto = new ExpenseDto();
+            BeanUtils.copyProperties(expenseEntity, expenseDto);
+            returnValue.add(expenseDto);
+        }
+
+        return returnValue;
+    }
 }

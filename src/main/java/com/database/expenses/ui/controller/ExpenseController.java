@@ -1,5 +1,8 @@
 package com.database.expenses.ui.controller;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -9,6 +12,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.database.expenses.service.ExpenseService;
@@ -60,7 +64,24 @@ public class ExpenseController {
     }
 
     @DeleteMapping(path="/{id}")
-    public String deleteExpenses() {
-        return "deleteExpenses called";
+    public String deleteExpenses(@PathVariable String id) {
+        expenseService.deleteExpenses(id);
+        String returnValue = new String("User " + id + " deleted");
+        return returnValue;
+    }
+
+    @GetMapping
+    public List<ExpenseResponse> getExpenses(@RequestParam(value = "page", defaultValue = "0") int page,
+                                             @RequestParam(value = "limit", defaultValue = "5") int limit) {
+        List<ExpenseResponse> returnValue = new ArrayList<>();
+
+        List<ExpenseDto> expenses = expenseService.getExpenses(page, limit);
+        for (ExpenseDto expenseDto : expenses) {
+          ExpenseResponse expenseSingleResponse = new ExpenseResponse();
+          BeanUtils.copyProperties(expenseDto, expenseSingleResponse);
+          returnValue.add(expenseSingleResponse);
+        }
+
+        return returnValue;
     }
 }
