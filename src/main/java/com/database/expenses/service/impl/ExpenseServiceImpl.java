@@ -60,8 +60,7 @@ public class ExpenseServiceImpl implements ExpenseService {
 
         ExpenseEntity expenseEntity = expenseRepository.findByExpenseId(expenseId);
         if (expenseEntity == null) {
-            System.out.println("ha");
-            // TODO: throw new UsernameNotFoundException(userId);
+            throw new RuntimeException("Record does not exist");
         }
 
         ExpenseDto retVal = new ExpenseDto();
@@ -74,8 +73,7 @@ public class ExpenseServiceImpl implements ExpenseService {
     public ExpenseDto updateExpense(String expenseId, ExpenseDto expense) {
         ExpenseEntity expenseEntity = expenseRepository.findByExpenseId(expenseId);
         if (expenseEntity == null) {
-            System.out.println("ha");
-            // TODO: throw new UsernameNotFoundException(userId);
+            throw new RuntimeException("Record does not exist");
         }
 
         if (expense.getActor() != null && !expense.getActor().equals("")) {
@@ -109,8 +107,7 @@ public class ExpenseServiceImpl implements ExpenseService {
     public void deleteExpenses(String expenseId) {
         ExpenseEntity expenseEntity = expenseRepository.findByExpenseId(expenseId);
         if (expenseEntity == null) {
-            System.out.println("haha");
-            // TODO: throw new UsernameNotFoundException(userId);
+            throw new RuntimeException("Record does not exist");
         }
         expenseRepository.delete(expenseEntity);
     }
