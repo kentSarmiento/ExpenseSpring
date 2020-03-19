@@ -6,6 +6,9 @@ import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
@@ -32,6 +35,7 @@ class ExpenseServiceImplTest {
     private final long FIXED_ID = 1L;
     private final double FIXED_AMOUNT = 10000;
     private final String FIXED_DATE = "fixed-date";
+    private final String FIXED_DAY = "fixed-day";
     private final String FIXED_CATEGORY = "fixed-category";
     private final String FIXED_SUB_CATEGORY = "fixed-sub-category";
     private final String FIXED_ACTOR = "fixed-actor";
@@ -50,6 +54,7 @@ class ExpenseServiceImplTest {
         fixedExpenseEntity.setId(FIXED_ID);
         fixedExpenseEntity.setAmount(FIXED_AMOUNT);
         fixedExpenseEntity.setDate(FIXED_DATE);
+        fixedExpenseEntity.setDay(FIXED_DAY);
         fixedExpenseEntity.setCategory(FIXED_CATEGORY);
         fixedExpenseEntity.setSubCategory(FIXED_SUB_CATEGORY);
         fixedExpenseEntity.setActor(FIXED_ACTOR);
@@ -72,6 +77,7 @@ class ExpenseServiceImplTest {
              assertEquals(FIXED_ID, expenseDto.getId());
              assertEquals(FIXED_AMOUNT, expenseDto.getAmount());
              assertEquals(FIXED_DATE, expenseDto.getDate());
+             assertEquals(FIXED_DAY, expenseDto.getDay());
              assertEquals(FIXED_CATEGORY, expenseDto.getCategory());
              assertEquals(FIXED_SUB_CATEGORY, expenseDto.getSubCategory());
              assertEquals(FIXED_ACTOR, expenseDto.getActor());
@@ -116,7 +122,8 @@ class ExpenseServiceImplTest {
 
              assertEquals(FIXED_ID, addedExpenseDto.getId());
              assertEquals(FIXED_AMOUNT, addedExpenseDto.getAmount());
-             assertEquals(FIXED_DATE, expenseDto.getDate());
+             assertEquals(FIXED_DATE, addedExpenseDto.getDate());
+             assertEquals(FIXED_DAY, addedExpenseDto.getDay());
              assertEquals(FIXED_CATEGORY, addedExpenseDto.getCategory());
              assertEquals(FIXED_SUB_CATEGORY, addedExpenseDto.getSubCategory());
              assertEquals(FIXED_ACTOR, addedExpenseDto.getActor());
@@ -140,6 +147,74 @@ class ExpenseServiceImplTest {
         assertThrows(RuntimeException.class,
            () -> {
                expenseService.addExpense(expenseDto);
+           }
+        );
+    }
+
+    @Test
+    void testUpdateExpense() {
+        // Mock setup
+        when(expenseRepository.findByExpenseId(FIXED_EXPENSE_ID)).thenReturn(fixedExpenseEntity);
+        when(expenseRepository.save(any())).thenReturn(fixedExpenseEntity);
+
+        // Test setup
+        ExpenseDto expenseDto = new ExpenseDto();
+        BeanUtils.copyProperties(fixedExpenseEntity, expenseDto);
+
+        expenseDto.setAmount(FIXED_AMOUNT+1);
+
+        // Test
+        ExpenseDto updatedExpenseDto = expenseService.updateExpense(FIXED_EXPENSE_ID, expenseDto);
+
+        // Assertion
+        assertAll(
+           () -> {
+             assertNotNull(updatedExpenseDto);
+
+             assertEquals(FIXED_ID, updatedExpenseDto.getId());
+             assertEquals(expenseDto.getAmount(), updatedExpenseDto.getAmount());
+             assertEquals(FIXED_DATE, updatedExpenseDto.getDate());
+             assertEquals(FIXED_DAY, updatedExpenseDto.getDay());
+             assertEquals(FIXED_CATEGORY, updatedExpenseDto.getCategory());
+             assertEquals(FIXED_SUB_CATEGORY, updatedExpenseDto.getSubCategory());
+             assertEquals(FIXED_ACTOR, updatedExpenseDto.getActor());
+             assertEquals(FIXED_EXPENSE_ID, updatedExpenseDto.getExpenseId());
+           }
+        );
+    }
+
+    @Test
+    void testUpdateExpenseNoRecordExists() {
+        // Mock setup
+        when(expenseRepository.findByExpenseId(UNIQUE_EXPENSE_ID)).thenReturn(null);
+
+        // Test and Assertion
+        assertThrows(RuntimeException.class,
+           () -> {
+               expenseService.updateExpense(UNIQUE_EXPENSE_ID, new ExpenseDto());
+           }
+        );
+    }
+
+    @Test
+    void testDeleteExpense() {
+        // Mock setup
+        when(expenseRepository.findByExpenseId(FIXED_EXPENSE_ID)).thenReturn(fixedExpenseEntity);
+
+        // Test
+        expenseService.deleteExpenses(FIXED_EXPENSE_ID); // TODO: How to verify?
+    }
+
+
+    @Test
+    void testDeleteExpenseNoRecordExists() {
+        // Mock setup
+        when(expenseRepository.findByExpenseId(UNIQUE_EXPENSE_ID)).thenReturn(null);
+
+        // Test and Assertion
+        assertThrows(RuntimeException.class,
+           () -> {
+               expenseService.deleteExpenses(UNIQUE_EXPENSE_ID);
            }
         );
     }
