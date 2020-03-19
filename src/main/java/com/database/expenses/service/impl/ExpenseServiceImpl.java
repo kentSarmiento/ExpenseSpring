@@ -76,22 +76,22 @@ public class ExpenseServiceImpl implements ExpenseService {
             throw new RuntimeException("Record does not exist");
         }
 
-        if (expense.getActor() != null && !expense.getActor().equals("")) {
+        if (expense.getActor() != null) {
             expenseEntity.setActor(expense.getActor());
         }
-        if (expense.getAmount() != 0) {
+        if (expense.getAmount() != 0) { // TODO : How to check if field exists in HTTP JSON request
             expenseEntity.setAmount(expense.getAmount());
         }
-        if (expense.getCategory() != null && !expense.getCategory().equals("")) {
+        if (expense.getCategory() != null) {
             expenseEntity.setCategory(expense.getCategory());
         }
-        if (expense.getSubCategory() != null && !expense.getSubCategory().equals("")) {
+        if (expense.getSubCategory() != null) {
             expenseEntity.setSubCategory(expense.getSubCategory());
         }
-        if (expense.getDate() != null && !expense.getDate().equals("")) {
+        if (expense.getDate() != null) {
             expenseEntity.setDate(expense.getDate());
         }
-        if (expense.getDay() != null && !expense.getDay().equals("")) {
+        if (expense.getDay() != null) {
             expenseEntity.setDay(expense.getDay());
         }
 
