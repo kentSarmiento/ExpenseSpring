@@ -28,20 +28,9 @@ public class ExpenseServiceImpl implements ExpenseService {
     @Override
     public ExpenseDto addExpense(ExpenseDto expense) {
 
-        // Check uniqueness of record to be added
-        List<ExpenseEntity> storedAlready = expenseRepository.findByDateAndAmount(expense.getDate(), expense.getAmount());
+        ExpenseEntity storedAlready = findDuplicateEntity(expense);
         if (storedAlready != null) {
-            for (ExpenseEntity eachStoredAlready : storedAlready) {
-                try {
-                    if (eachStoredAlready.getCategory().equals(expense.getCategory())) {
-                        if (eachStoredAlready.getSubCategory().equals(expense.getSubCategory())) {
-                            throw new RuntimeException("Same record already exist");
-                        }
-                    }
-                } catch (NullPointerException e) {
-                    // Disregard null strings
-                }
-            }
+            throw new RuntimeException("Same record already exist");
         }
 
         ExpenseEntity expenseEntity = new ExpenseEntity();
@@ -55,6 +44,15 @@ public class ExpenseServiceImpl implements ExpenseService {
         BeanUtils.copyProperties(storedEntity,retVal);
 
         return retVal;
+    }
+
+    // Check uniqueness of record to be added
+    private ExpenseEntity findDuplicateEntity(ExpenseDto expense) {
+        ExpenseEntity storedAlready = expenseRepository.findByDateAndAmountAndCategoryAndSubCategory(
+                                                            expense.getDate(), expense.getAmount(),
+                                                            expense.getCategory(), expense.getSubCategory());
+
+        return storedAlready;
     }
 
     @Override
