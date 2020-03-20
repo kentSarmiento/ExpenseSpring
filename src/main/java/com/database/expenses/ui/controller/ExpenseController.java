@@ -5,6 +5,7 @@ import java.util.List;
 
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -27,7 +28,8 @@ public class ExpenseController {
     @Autowired
     ExpenseService expenseService;
 
-    @GetMapping(path="/{id}")
+    @GetMapping(path="/{id}",
+                produces = { MediaType.APPLICATION_JSON_VALUE , MediaType.APPLICATION_XML_VALUE } )
     public ExpenseResponse getExpenses(@PathVariable String id) {
         ExpenseResponse retVal = new ExpenseResponse();
 
@@ -37,7 +39,9 @@ public class ExpenseController {
         return retVal;
     }
 
-    @PostMapping
+    @PostMapping(
+                consumes = { MediaType.APPLICATION_JSON_VALUE , MediaType.APPLICATION_XML_VALUE },
+                produces = { MediaType.APPLICATION_JSON_VALUE , MediaType.APPLICATION_XML_VALUE } )
     public ExpenseResponse addExpenses(@RequestBody ExpenseRequestModel expenseDetails) {
         ExpenseResponse retVal = new ExpenseResponse();
 
@@ -50,7 +54,9 @@ public class ExpenseController {
         return retVal;
     }
 
-    @PutMapping(path="/{id}")
+    @PutMapping(path="/{id}",
+                consumes = { MediaType.APPLICATION_JSON_VALUE , MediaType.APPLICATION_XML_VALUE },
+                produces = { MediaType.APPLICATION_JSON_VALUE , MediaType.APPLICATION_XML_VALUE } )
     public ExpenseResponse updateExpenses(@PathVariable String id, @RequestBody ExpenseRequestModel expenseDetails) {
         ExpenseResponse retVal = new ExpenseResponse();
 
@@ -63,14 +69,16 @@ public class ExpenseController {
         return retVal;
     }
 
-    @DeleteMapping(path="/{id}")
+    @DeleteMapping(path="/{id}",
+                produces = { MediaType.APPLICATION_JSON_VALUE , MediaType.APPLICATION_XML_VALUE } )
     public String deleteExpenses(@PathVariable String id) {
         expenseService.deleteExpenses(id);
         String returnValue = new String("User " + id + " deleted");
         return returnValue;
     }
 
-    @GetMapping
+    @GetMapping(
+                produces = { MediaType.APPLICATION_JSON_VALUE , MediaType.APPLICATION_XML_VALUE } )
     public List<ExpenseResponse> getExpenses(@RequestParam(value = "page", defaultValue = "0") int page,
                                              @RequestParam(value = "limit", defaultValue = "5") int limit) {
         List<ExpenseResponse> returnValue = new ArrayList<>();
