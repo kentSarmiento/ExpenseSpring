@@ -11,10 +11,12 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import com.database.expenses.ExpenseRepository;
+import com.database.expenses.exceptions.ExpenseServiceException;
 import com.database.expenses.io.entity.ExpenseEntity;
 import com.database.expenses.service.ExpenseService;
 import com.database.expenses.shared.RandomGenerator;
 import com.database.expenses.shared.dto.ExpenseDto;
+import com.database.expenses.ui.model.response.ErrorMessages;
 
 @Service
 public class ExpenseServiceImpl implements ExpenseService {
@@ -30,7 +32,7 @@ public class ExpenseServiceImpl implements ExpenseService {
 
         ExpenseEntity storedAlready = findDuplicateEntity(expense);
         if (storedAlready != null) {
-            throw new RuntimeException("Same record already exist");
+            throw new ExpenseServiceException(ErrorMessages.RECORD_ALREADY_EXISTS.getErrorMessage());
         }
 
         ExpenseEntity expenseEntity = new ExpenseEntity();
@@ -60,7 +62,7 @@ public class ExpenseServiceImpl implements ExpenseService {
 
         ExpenseEntity expenseEntity = expenseRepository.findByExpenseId(expenseId);
         if (expenseEntity == null) {
-            throw new RuntimeException("Record does not exist");
+            throw new ExpenseServiceException(ErrorMessages.RECORD_DOES_NOT_EXIST.getErrorMessage());
         }
 
         ExpenseDto retVal = new ExpenseDto();
@@ -73,7 +75,7 @@ public class ExpenseServiceImpl implements ExpenseService {
     public ExpenseDto updateExpense(String expenseId, ExpenseDto expense) {
         ExpenseEntity expenseEntity = expenseRepository.findByExpenseId(expenseId);
         if (expenseEntity == null) {
-            throw new RuntimeException("Record does not exist");
+            throw new ExpenseServiceException(ErrorMessages.RECORD_DOES_NOT_EXIST.getErrorMessage());
         }
 
         if (expense.getActor() != null) {
@@ -107,7 +109,7 @@ public class ExpenseServiceImpl implements ExpenseService {
     public void deleteExpenses(String expenseId) {
         ExpenseEntity expenseEntity = expenseRepository.findByExpenseId(expenseId);
         if (expenseEntity == null) {
-            throw new RuntimeException("Record does not exist");
+            throw new ExpenseServiceException(ErrorMessages.RECORD_DOES_NOT_EXIST.getErrorMessage());
         }
         expenseRepository.delete(expenseEntity);
     }
